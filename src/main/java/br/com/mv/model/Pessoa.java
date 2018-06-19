@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,8 +13,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import org.joda.time.LocalDate;
+
+import br.com.mv.utils.DataUtils;
 
 @Entity
 @Table(name = "pessoa")
@@ -62,6 +66,9 @@ public class Pessoa implements Serializable {
 
 	@OneToMany(mappedBy = "pessoa")
 	private List<Telefone> telefones;
+	
+	
+
 
 	public Long getId() {
 		return id;

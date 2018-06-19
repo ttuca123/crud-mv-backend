@@ -4,10 +4,14 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.mv.model.Pessoa;
 import br.com.mv.model.Telefone;
+import br.com.mv.utils.DataUtils;
 
 public class PessoaDTO implements Serializable{
 		
@@ -27,6 +31,7 @@ public class PessoaDTO implements Serializable{
 		this.dataNascimento = pessoa.getDataNascimento();
 		this.email = pessoa.getEmail();
 		this.telefones = pessoa.getTelefones();
+		this.idade = getIdade();
 	}
 	
 	private Long id;
@@ -37,14 +42,26 @@ public class PessoaDTO implements Serializable{
 	
 	private String cpf;
 
-	@JsonFormat(pattern = "dd/MM/yyyy", timezone = "GMT-3")
+	@JsonFormat(pattern = "dd/MM/yyyy", timezone = "GMT-3" )	
 	private Date dataNascimento;
-
 	
 	private String email;
-
+	
+	private int idade;
 	
 	private List<Telefone> telefones;
+
+	public int getIdade() {			
+		
+		idade = DataUtils.diferencaEntreDatasEmAnos(new LocalDate(dataNascimento), new LocalDate(new Date()));
+		
+		return idade;
+	}
+
+
+	public void setIdade(int idade) {
+		this.idade = idade;
+	}
 	
 	public Long getId() {
 		return id;

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,19 +37,22 @@ public class PessoaResource {
 		
 		Pessoa pessoa = pessoaService.find(id);
 		
-		return ResponseEntity.ok(pessoa);
+		PessoaDTO pessoaDTO = new PessoaDTO(pessoa);
+		
+		
+		return ResponseEntity.ok(pessoaDTO);
 	}
 	
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Void> salvar(@Valid @RequestBody PessoaDTO pessoaDTO) {
+	public ResponseEntity<Pessoa> salvar(@Valid @RequestBody Pessoa pessoa) {
 		
-		Pessoa pessoa = pessoaService.fromDTO(pessoaDTO);
+		
 
 		
 		pessoa = pessoaService.insert(pessoa);
 
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pessoaDTO).toUri();
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pessoa).toUri();
 
 		return ResponseEntity.created(uri).build();
 		
@@ -63,23 +67,26 @@ public class PessoaResource {
 		
 		pessoa = pessoaService.update(pessoa);
 
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pessoaDTO).toUri();
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pessoa).toUri();
 
 		return ResponseEntity.created(uri).build();
 		
 		
 	}
 	
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<Pessoa> delete(@PathVariable Long id) {
-
+	
 		
+	@DeleteMapping(value="/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+				
 		try {
+			
 			pessoaService.delete(id);
-
+			
 		} catch (DataIntegrityViolationException e) {
 
 			throw new DataIntegrityException("Não é possível excluir uma Pessoa que possui telefones");
+			
 		}
 
 		return ResponseEntity.noContent().build();
@@ -92,7 +99,11 @@ public class PessoaResource {
 
 		List<PessoaDTO> list = pessoas.stream().map(obj -> new PessoaDTO(obj)).collect(Collectors.toList());
 
-		return ResponseEntity.ok().body(list);
+		ResponseEntity<List<PessoaDTO>> listaPessoa = ResponseEntity.ok().body(list);
+		
+		
+		
+		return listaPessoa;
 
 	}
 	
